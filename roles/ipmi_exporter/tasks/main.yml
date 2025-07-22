@@ -1,0 +1,35 @@
+- name: Скачиваем IPMI Exporter
+  become: yes
+  get_url:
+    url: "https://github.com/prometheus-community/ipmi_exporter/releases/download/v1.10.1/ipmi_exporter-1.10.1.linux-amd64.tar.gz"
+    dest: "/tmp/ipmi_exporter.tar.gz"
+
+- name: Распаковываем IPMI Exporter
+  become: yes
+  unarchive:
+    src: "/tmp/ipmi_exporter.tar.gz"
+    dest: /usr/local/bin/
+    copy: no
+
+- name: Переименовываем бинарник
+  become: yes
+  shell: |
+    mv /usr/local/bin/ipmi_exporter-*.linux-amd64/ipmi_exporter /usr/local/bin/
+
+- name: Создаём systemd юнит
+  become: yes
+  template:
+    src: ipmi_exporter.service.j2
+    dest: /etc/systemd/system/ipmi_exporter.service
+
+- name: Перезагружаем systemd
+  become: yes
+  systemd:
+    daemon_reload: yes
+
+- name: Включаем автозапуск IPMI Exporter
+  become: yes
+  service:
+    name: ipmi_exporter
+    enabled: yes
+    state: started

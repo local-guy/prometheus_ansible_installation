@@ -1,0 +1,49 @@
+- name: Обновляем пакеты
+  become: yes
+  apt:
+    update_cache: yes
+
+- name: Устанавливаем зависимости
+  become: yes
+  apt:
+    name:
+          - wget
+          - gnupg
+          - systemd-sysv
+    state: present
+
+- name: Скачиваем Node Exporter
+  become: yes
+  get_url:
+    url: "https://github.com/prometheus/node_exporter/releases/download/v1.9.1/node_exporter-1.9.1.linux-amd64.tar.gz"
+    dest: "/tmp/node_exporter.tar.gz"
+
+- name: Распаковываем Node Exporter
+  become: yes
+  unarchive:
+    src: "/tmp/node_exporter.tar.gz"
+    dest: /usr/local/bin/
+    copy: no
+
+- name: Переименовываем бинарник
+  become: yes
+  shell: |
+    mv /usr/local/bin/node_exporter-*.linux-amd64/node_exporter /usr/local/bin/
+
+- name: Создаём systemd юнит
+  become: yes
+  template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+
+- name: Перезагружаем systemd
+  become: yes
+  systemd:
+    daemon_reload: yes
+
+- name: Включаем автозапуск Node Exporter
+  become: yes
+  service:
+    name: node_exporter
+    enabled: yes
+    state: started

@@ -1,0 +1,10 @@
+[Unit]
+Description=IPMI Exporter
+After=network.target
+
+[Service]
+User=root
+ExecStart=/usr/local/bin/ipmi_exporter --config.file=/etc/ipmi_exporter/config.yml
+
+[Install]
+WantedBy=multi-user.target

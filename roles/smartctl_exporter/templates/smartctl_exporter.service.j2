@@ -1,0 +1,11 @@
+[Unit]
+Description=SmartCTL Exporter
+After=network.target
+
+[Service]
+User=root
+ExecStart=/usr/local/bin/smartctl_exporter-0.14.0.linux-amd64/smartctl_exporter
+
+[Install]
+WantedBy=multi-user.target
+

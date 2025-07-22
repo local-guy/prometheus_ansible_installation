@@ -1,0 +1,13 @@
+# Пример конфига IPMI Exporter
+---
+start_delay: 5
+collectors:
+  - bmc
+  - chassis
+  - fan
+  - power
+ipmi:
+  timeout: 2s
+  retries: 3
+  privilege: user
+  configfile: /etc/ipmi_exporter/credentials.json

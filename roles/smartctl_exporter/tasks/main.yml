@@ -1,0 +1,30 @@
+- name: Скачиваем SmartCTL Exporter
+  become: yes
+  get_url:
+    url: "https://github.com/prometheus-community/smartctl_exporter/releases/download/v0.14.0/smartctl_exporter-0.14.0.linux-amd64.tar.gz"
+    dest: "/tmp/smartctl_exporter.tar.gz"
+
+- name: Распаковываем SmartCTL Exporter
+  become: yes
+  unarchive:
+    src: "/tmp/smartctl_exporter.tar.gz"
+    dest: /usr/local/bin/
+    copy: no
+
+- name: Создаём systemd юнит
+  become: yes
+  template:
+    src: smartctl_exporter.service.j2
+    dest: /etc/systemd/system/smartctl_exporter.service
+
+- name: Перезагружаем systemd
+  become: yes
+  systemd:
+    daemon_reload: yes
+
+- name: Включаем автозапуск SmartCTL Exporter
+  become: yes
+  service:
+    name: smartctl_exporter
+    enabled: yes
+    state: started

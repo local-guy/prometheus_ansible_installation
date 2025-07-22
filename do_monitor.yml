@@ -1,0 +1,15 @@
+- name: Установка экспортёров на Linux сервера
+  hosts: all_servers
+  become: yes
+  ignore_errors: yes
+  vars:
+    node_exporter_version: "1.9.1"
+    smartctl_exporter_version: "0.1.0"
+
+  roles:
+    - role: node_exporter
+      tags: ["node", "common"]
+
+    - role: smartctl_exporter
+      tags: ["smartctl"]
+      when: "'physical_servers' in group_names"
